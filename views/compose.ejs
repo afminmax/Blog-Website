@@ -1,18 +1,11 @@
 <%- include('partials/header') -%>
 
-<body>
-  <div class="container">
-    <h1>Compose</h1>
-    <form class="item" action="/" method="post">
-      <input
-        type="text"
-        name="newItem"
-        placeholder="New Item"
-        autocomplete="off"
-      />
-      <button type="submit" name="publish button" value="">Publish</button>
-    </form>
-  </div>
-</body>
+<div class="container">
+  <h1>Compose</h1>
+  <form class="item" action="/compose" method="post">
+    <input type="text" name="postTitle" autocomplete="off" />
+    <button type="submit" name="publish button" value="">Publish</button>
+  </form>
+</div>
 
 <%- include('partials/footer') -%>
