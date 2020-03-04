@@ -20,7 +20,8 @@ app.use(express.static('public'));
 
 app.get('/', function(req, res) {
   res.render('home', {
-    startContent: homeStartingContent
+    startContent: homeStartingContent,
+    posts: postsArray
   });
 });
 
@@ -48,7 +49,6 @@ app.post('/compose', function(req, res) {
   };
   postsArray.push(post);
   res.redirect('/');
-  console.log(postsArray);
 });
 // ---------------------------------------------- //
 
