@@ -11,6 +11,8 @@ const contactContent =
 
 const app = express();
 
+let postsArray = [];
+
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -40,13 +42,13 @@ app.get('/compose', function(req, res) {
 });
 
 app.post('/compose', function(req, res) {
-  console.log(req.body.postTitle);
-  console.log(req.body.postBody);
   const post = {
     title: req.body.postTitle,
     content: req.body.postBody
   };
-  console.log(post);
+  postsArray.push(post);
+  res.redirect('/');
+  console.log(postsArray);
 });
 // ---------------------------------------------- //
 
