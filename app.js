@@ -38,7 +38,7 @@ app.get('/contact', function(req, res) {
   });
 });
 
-// ----------------Compose Page -----------------//
+// --------------- Compose Page Rendering -----------------//
 app.get('/compose', function(req, res) {
   res.render('compose');
 });
@@ -54,20 +54,25 @@ app.post('/compose', function(req, res) {
 });
 // ---------------------------------------------- //
 
+// --------------- Posts Page Rendering -----------------//
 app.get('/posts/:postName', function(req, res) {
-  // console.log(req.params.postName);
   const requestedTitle = _.lowerCase(req.params.postName);
   // console.log('logout: ' + requestedTitle);
   postsArray.forEach(function(item) {
     const storedTitle = _.lowerCase(item.title);
     if (storedTitle === requestedTitle) {
       console.log('match found');
+      console.log(req.params.postName);
+      res.render('post', {
+        headerTitle: item.title,
+        postContent: item.content
+      });
     } else {
       console.log('match not found');
-      // console.log(requestedTitle);
     }
   });
 });
+// ---------------------------------------------- //
 
 app.listen(3000, function() {
   console.log('Server started on port 3000');
