@@ -48,12 +48,24 @@ app.post('/compose', function(req, res) {
     content: req.body.postBody
   };
   postsArray.push(post);
+  console.log(post);
   res.redirect('/');
 });
 // ---------------------------------------------- //
 
 app.get('/posts/:postName', function(req, res) {
-  console.log(req.params.postName);
+  // console.log(req.params.postName);
+  const requestedTitle = req.params.postName;
+  console.log('logout: ' + requestedTitle);
+  postsArray.forEach(function(item) {
+    const storedTitle = item.title;
+    if (storedTitle === requestedTitle) {
+      console.log('match found');
+    } else {
+      console.log('match not found');
+      console.log(requestedTitle);
+    }
+  });
 });
 
 app.listen(3000, function() {
