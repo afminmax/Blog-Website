@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
+const mongoose = require('mongoose');
 const _ = require('lodash');
 
 const homeStartingContent =
@@ -12,17 +13,32 @@ const contactContent =
 
 const app = express();
 
-let postsArray = [];
+// let postsArray = [];
 
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
+// ------------------------- MONGODB DECLARATIONS ------------------------------------ //
+mongoose.connect('mongodb+srv://****:*****@*****.mongodb.net/blogDB', {
+  useNewUrlParser: true
+});
+
+const postSchema = new mongoose.Schema({
+  title: String,
+  content: String
+});
+
+const Post = mongoose.model('Post', postSchema);
+// ------------------------- MONGODB DECLARATIONS ------------------------------------ //
+
 app.get('/', function(req, res) {
-  res.render('home', {
-    startContent: homeStartingContent,
-    posts: postsArray
+  Post.find({}, function(err, posts) {
+    res.render('home', {
+      startContent: homeStartingContent,
+      posts: posts
+    });
   });
 });
 
@@ -43,37 +59,68 @@ app.get('/compose', function(req, res) {
   res.render('compose');
 });
 
+// app.post('/compose', function(req, res) {
+//   const post = {
+//     title: req.body.postTitle,
+//     content: req.body.postBody
+//   };
+//   postsArray.push(post);
+//   console.log(post);
+//   res.redirect('/');
+// });
+
 app.post('/compose', function(req, res) {
-  const post = {
+  const post = new Post({
     title: req.body.postTitle,
     content: req.body.postBody
-  };
-  postsArray.push(post);
+  });
+  // postsArray.push(post);
   console.log(post);
-  res.redirect('/');
-});
-// ---------------------------------------------- //
-
-// --------------- Posts Page Rendering -----------------//
-app.get('/posts/:postName', function(req, res) {
-  const requestedTitle = _.lowerCase(req.params.postName);
-  // console.log('logout: ' + requestedTitle);
-  postsArray.forEach(function(item) {
-    const storedTitle = _.lowerCase(item.title);
-    if (storedTitle === requestedTitle) {
-      console.log('match found');
-      console.log(req.params.postName);
-      res.render('post', {
-        headerTitle: item.title,
-        postContent: item.content
-      });
-    } else {
-      console.log('match not found');
+  post.save(function(err) {
+    if (!err) {
+      res.redirect('/');
     }
   });
 });
+
 // ---------------------------------------------- //
 
-app.listen(3000, function() {
-  console.log('Server started on port 3000');
+// --------------- Posts Page Rendering -----------------//
+app.get('/posts/:postId', function(req, res) {
+  // const requestedPostId = _.lowerCase(req.params.postId);
+  // console.log('logout: ' + requestedTitle);
+  const requestedPostId = req.params.postId;
+
+  Post.findOne({ _id: requestedPostId }, function(err, post) {
+    res.render('post', {
+      headerTitle: post.title,
+      postContent: post.content
+    });
+  });
+
+  // postsArray.forEach(function(item) {
+  //   const storedTitle = _.lowerCase(item.title);
+  //   if (storedTitle === requestedTitle) {
+  //     console.log('match found');
+  //     console.log(req.params.postName);
+  //     res.render('post', {
+  //       headerTitle: item.title,
+  //       postContent: item.content
+  //     });
+  //   } else {
+  //     console.log('match not found');
+  //   }
+  // });
+});
+// ---------------------------------------------- //
+
+let port = process.env.PORT;
+if (port == null || port == '') {
+  port = 3000;
+}
+
+app.listen(port, function() {
+  console.log(
+    '...server has started remotely on heroku and locally on port 3000...'
+  );
 });
